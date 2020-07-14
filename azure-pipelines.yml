@@ -19,7 +19,7 @@ jobs:
       targetType: 'inline'
       script: |
         hostname
-        ping -c5 10.0.1.4
+
 
 - deployment: VMDeploy
   displayName: web
