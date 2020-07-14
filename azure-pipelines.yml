@@ -24,9 +24,9 @@ jobs:
       Contents: '**/target/*.?(war|jar)'
       TargetFolder: $(Build.ArtifactStagingDirectory)
   - upload: $(Build.ArtifactStagingDirectory)
-    artifact: drop		  
+    artifact: drop
 
-	- deployment: VMDeploy
+- deployment: VMDeploy
   displayName: web
   pool:
     vmImage: 'Ubuntu-16.04'
