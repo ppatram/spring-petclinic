@@ -19,8 +19,7 @@ jobs:
       targetType: 'inline'
       script: |
         hostname
-        ifconfig -a
-        whoami		  
+        ping -c5 10.0.1.4
 
 - deployment: VMDeploy
   displayName: web
