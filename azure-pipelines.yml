@@ -13,7 +13,7 @@ jobs:
 - deployment: VMDeploy
   displayName: web
   environment:
-    name: <environment name>
+    name: ppatram_env
     resourceType: VirtualMachine
   strategy:
       rolling:
