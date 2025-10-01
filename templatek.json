@@ -1,0 +1,302 @@
+{
+ "Parameters": {
+  "SsmParameterValuedeltavpcvpcidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/delta/vpc/vpcid"
+  },
+  "SsmParameterValuedeltavpcprivatesubnet1aidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/delta/vpc/privatesubnet1aid"
+  },
+  "SsmParameterValuedeltavpcprivatesubnet2aidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/delta/vpc/privatesubnet2aid"
+  },
+  "SsmParameterValuedeltavpcprivatesubnet3aidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/delta/vpc/privatesubnet3aid"
+  },
+  "Description": {
+   "Type": "String",
+   "Default": "I understand the instructions",
+   "AllowedValues": [
+    "I understand the instructions"
+   ],
+   "Description": "# Welcome to your CDK TypeScript project\n\nThis is a blank project for CDK development with TypeScript.\n\nThe `cdk.json` file tells the CDK Toolkit how to execute your app.\n\n## Useful commands\n\n* `npm run build`   compile typescript to js\n* `npm run watch`   watch for changes and compile\n* `npm run test`    perform the jest unit tests\n* `npx cdk deploy`  deploy this stack to your default AWS account/region\n* `npx cdk diff`    compare deployed stack with current state\n* `npx cdk synth`   emits the synthesized CloudFormation template\n"
+  },
+  "Region": {
+   "Type": "String",
+   "Default": "us-east-1",
+   "AllowedValues": [
+    "us-east-1",
+    "us-west-1"
+   ],
+   "Description": "Select deployment region"
+  },
+  "blockCode": {
+   "Type": "String",
+   "AllowedPattern": "^[A-Z]{10,11}$",
+   "ConstraintDescription": "Block code must be 10 or 11 uppercase letters (A–Z only).",
+   "Description": "Enter blockCode for your project (10–11 uppercase letters)"
+  },
+  "iServer": {
+   "Type": "String",
+   "AllowedPattern": "^[a-zA-Z0-9]{1,20}$",
+   "ConstraintDescription": "iServer code must be 1–20 alphanumeric characters (A–Z, a–z, 0–9).",
+   "Description": "Enter iServer code"
+  },
+  "costCenter": {
+   "Type": "String",
+   "AllowedPattern": "^[a-zA-Z0-9]{1,20}$",
+   "ConstraintDescription": "Cost Center must be 1–20 alphanumeric characters",
+   "Description": "Enter Cost Center"
+  },
+  "Identifier": {
+   "Type": "String",
+   "Default": "my-identifier",
+   "Description": "Identifier for the resources in this stack"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/cdkv2/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Resources": {
+  "securityGroup32C48086": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group with outbound internet access",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "SsmParameterValuedeltavpcvpcidC96584B6F00A464EAD1953AFF4B05118Parameter"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GenAI-RagBot-Stackit/securityGroup/Resource"
+   }
+  },
+  "applicationLambdaServiceRole9800FE3A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "PermissionsBoundary": "arn:aws:iam::867752000777:policy/cft-developer-boundary-policy",
+    "RoleName": "delegate-admin-e65a7fc8f96f5b01b-${Identifier}",
+    "Tags": [
+     {
+      "Key": "blockCode",
+      "Value": {
+       "Ref": "blockCode"
+      }
+     },
+     {
+      "Key": "costCenter",
+      "Value": {
+       "Ref": "costCenter"
+      }
+     },
+     {
+      "Key": "iServer",
+      "Value": {
+       "Ref": "iServer"
+      }
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GenAI-RagBot-Stackit/applicationLambda/ServiceRole/Resource"
+   }
+  },
+  "applicationLambdaServiceRoleDefaultPolicyC7BF0211": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "applicationLambdaServiceRoleDefaultPolicyC7BF0211",
+    "Roles": [
+     {
+      "Ref": "applicationLambdaServiceRole9800FE3A"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GenAI-RagBot-Stackit/applicationLambda/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "applicationLambdaC5239F87": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": "cdk-cdkv2-assets-867752000777-us-east-1",
+     "S3Key": "ceec240586ad7d62b3187bb09435beb44f5f0a9ad5d7e14f78016142aee5b16e.zip"
+    },
+    "FunctionName": "genai-rag-pattern-${Identifier}",
+    "Handler": "function_code.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "applicationLambdaServiceRole9800FE3A",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.11",
+    "Tags": [
+     {
+      "Key": "blockCode",
+      "Value": {
+       "Ref": "blockCode"
+      }
+     },
+     {
+      "Key": "costCenter",
+      "Value": {
+       "Ref": "costCenter"
+      }
+     },
+     {
+      "Key": "iServer",
+      "Value": {
+       "Ref": "iServer"
+      }
+     }
+    ],
+    "Timeout": 60,
+    "TracingConfig": {
+     "Mode": "Active"
+    }
+   },
+   "DependsOn": [
+    "applicationLambdaServiceRoleDefaultPolicyC7BF0211",
+    "applicationLambdaServiceRole9800FE3A"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "GenAI-RagBot-Stackit/applicationLambda/Resource",
+    "aws:asset:path": "asset.ceec240586ad7d62b3187bb09435beb44f5f0a9ad5d7e14f78016142aee5b16e",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "applicationLambdaLogGroup5F768177": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "applicationLambdaC5239F87"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731,
+    "Tags": [
+     {
+      "Key": "blockCode",
+      "Value": {
+       "Ref": "blockCode"
+      }
+     },
+     {
+      "Key": "costCenter",
+      "Value": {
+       "Ref": "costCenter"
+      }
+     },
+     {
+      "Key": "iServer",
+      "Value": {
+       "Ref": "iServer"
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "GenAI-RagBot-Stackit/applicationLambda/LogGroup/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31SW0vDMBT+LcujZNFOBO1bJyiC6Nj2NopkybFmS5OSy8Yo+e+maTvUgQ8lzTnf5eRLZmSW3ZGbCT3aKeP7qRRb0j5+qgU1tAYHBi/Bam8YbNAVwn++EkfeRwtsRtoVMG+EOz0b7ZtNiw4NQ3nCcbDMiMYJrYYKlVIfCynfvdtqrzjKnfEQShydf+kELGhN2qWWECWptb4GPj+hvEWNEYqJhsqCsajhRumE6QgFOzsGjGqqaAV8oaVgAizKo97P2qkwA7YMOFpxvtaL0aJHdJyh6xxlXy9KCgXnXpfH/810vm403NdTpCNhrbvOhc5lmfOVow5qUM4OIyXhXjNge/sRQwBnSdEtcU/mnu3BzamFTYklrbecksh48iplhKWuLGlfdTVenhx+3+IjGFLpLEZECDhpx0EqoaqAleZAdvb6kN2T7IFkk50VYmritYgayLJfvwG95wT4bAIAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "GenAI-RagBot-Stackit/CDKMetadata/Default"
+   }
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}✔
